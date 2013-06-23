@@ -38,11 +38,11 @@
  
     // Handle middleware communication
     socket.emit('join', {});
-    socket.on('frame', function(data) {
+    socket.on('frame', function(pkt) {
         console.log('got frame: ');
         console.log(data);
 
-        switch(data.format) {
+        switch(pkt.cmd) {
             case 'info':
                 objs[data.id] = data;
             break;
