@@ -74,6 +74,7 @@ start_player_loop(Socket) ->
     
     put(x, 0),
     put(y, 0),
+    put(speed, 0),
     put(rotation, 0),
     player_core_loop(Socket).
 
