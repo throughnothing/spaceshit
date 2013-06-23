@@ -2,49 +2,39 @@
 -module(ss_timer).
 
 
-
-
-
 -export([
 
-    start/1,
+    start/2,
     stop/0
-
+    timer_loop/1,
+    core_loop/2
 ]).
 
 
-
-
+stop() ->
+    ok.
 
 timer_loop(TickAction) ->
 
-    receive 
+    receive
         act ->
             TickAction(),
             timer_loop(TickAction);
-            
+
         terminate ->
             ok
     end.
-
-
-
-
 
 core_loop(TickLength, TimerPid) ->
 
-    receive 
+    receive
         terminate ->
             TimerPid ! terminate,
             ok
-    after 
+    after
         TickLength ->
-            TickAction(),
-            timer_loop()
+            TimerPid()
     end.
-
-
-
 
 
 start(TickLength, TickAction) ->
