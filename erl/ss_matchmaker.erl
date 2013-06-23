@@ -40,12 +40,16 @@ match(P1, P2) ->
   io:format("Matching ~w and ~w~n", [P1, P2]),
   ss_player:add_opponent(P1, P2),
   ss_player:add_opponent(P2, P1),
-  ss_match:start_match_loop(P1, P2),
+  ss_match:start_match_core_loop(P1, P2),
   ok.
 
 add_player(Pid, P) ->
   io:format("Adding Player ~w ~n", [ P ]),
-  Pid ! { add_player, P },
+  %try 
+  %Pid ! { add_player, P }
+  %catch _:_ 
+  %-> io:format("Backtrace ~p~n", [erlang:get_stacktrace()])
+%end,
   ok.
 
 remove_player(Pid) ->
@@ -53,7 +57,7 @@ remove_player(Pid) ->
   ok.
 
 start() ->
-  matchmaker_core_loop().
+  spawn(fun() -> matchmaker_core_loop() end).
 
 stop(MatchmakerPid) ->
   MatchmakerPid ! terminate,

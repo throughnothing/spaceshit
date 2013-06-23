@@ -47,7 +47,7 @@ get_info(Pid) ->
 start_match_core_loop(P1, P2) ->
   put(player1, P1),
   put(player2, P2),
-  match_core_loop().
+  spawn(fun() -> match_core_loop() end).
 
 create(P1, P2) ->
   start_match_core_loop(P1, P2).
