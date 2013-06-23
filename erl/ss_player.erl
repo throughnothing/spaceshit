@@ -15,9 +15,12 @@
 
 
 
-player_loop(Socket) ->
+player_core_loop(Socket) ->
 
     receive
+        
+      { add_opponent, P } ->
+          put(opponent, P).
     
         terminate ->
             ok
@@ -26,8 +29,13 @@ player_loop(Socket) ->
 
 
 
+add_opponent(Pid, P) ->
+  io:format("My opponent is: ~w~n", [ P ]),
+  Pid ! { add_opponent, P},
+  ok.
 
 
 create(FromSocket) ->
+    ss_matchmaker:add_player(MatchMakerPID, self()),
 
     spawn(fun() -> player_loop(FromSocket) end).

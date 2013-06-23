@@ -36,7 +36,10 @@ matchmaker_core_loop(Options) ->
 
   end.
 
-match(_P1, _P2) ->
+match(P1, P2) ->
+  io:format("Matching ~w and ~w~n", [_P1, _P2]),
+  ss_player:add_opponent(P1, P2),
+  ss_player:add_opponent(P2, P1),
   matching.
 
 add_player(Pid, P) ->
