@@ -7,12 +7,7 @@
 
 -export([
 
-    default_options/0,
-
-    listen_on/3,
-
-    internal_listen_on/2,
-    internal_listen_loop/1,
+    init_server_core_loop/1,
 
     start/0,
       start/1,
@@ -36,69 +31,35 @@ default_options() ->
 
 
 
-internal_listen_on(TheIP, ThePort) ->
+init_server_core_loop(Options) ->
 
-    Options = [ {ip, TheIP} ],
+    Auto = proplists:get_value(auto_listen, Options),
+    
+    if 
+        (Auto == true) -> 
+            IP   = proplists:get_value(ip, Options),
+            Port = proplists:get_value(ip, Options),
+            self() ! {listen,IP,Port} 
+    end,
 
-    { ok, ListeningSocket } = gen_tcp:listen(ThePort, Options),
-    ListeningSocket.
-
-
-
-
-
-internal_listen_loop(ListeningSocket) ->
-
-    { ok, ServerSocket } = gen_tcp:accept(ListeningSocket),
-    handle_new_server(ServerSocket),
-    internal_listen_loop(ListeningSocket).
+    server_core_loop().
 
 
 
 
 
-handle_new_server(ServerSocket) ->
-
-    gen_tcp:send(ServerSocket, "\nHello there\n\n\n"),
-    gen_tcp:close(ServerSocket).
-
-
-
-
-
-spawn_listen_process(IP, Port) ->
-
-    spawn(fun() -> internal_listen_loop(internal_listen_on(IP, Port)) end).
-
-
-
-
-
-server_core_loop(Options) ->
+server_core_loop() ->
 
     receive
     
-        { PID, listen, IP, Port } -> 
-            spawn_listen_process(IP, Port),
-            server_core_loop(Options);
-    
-        { PID, start_server } -> 
-            % todo
-            server_core_loop(Options);
+        { listen, IP, Port } ->
+            ss_network:listen_on(self(),IP,Port),
+            server_core_loop();
     
         terminate ->
             ok
     
     end.
-
-
-
-
-
-listen_on(Pid, IP, Port) ->
-
-    Pid ! { self(), listen, IP, Port },
-    ok.
 
 
 
@@ -114,7 +75,7 @@ start() ->
 
 start(Options) -> 
 
-    spawn(fun() -> server_core_loop(Options) end).
+    spawn(fun() -> init_server_core_loop(Options) end).
 
 
 

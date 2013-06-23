@@ -7,13 +7,9 @@
 
 -export([
 
-    default_options/0,
-
     listen_on/3,
 
-    start/0,
-      start/1,
-      
+    start/1,      
     stop/1,
 
 %%%%%%%%%%%%%%%%%%%%
@@ -24,17 +20,6 @@
     internal_listen_loop/1
 
 ]).
-
-
-
-
-
-default_options() ->
-
-    [ { auto_listen, false            },
-      { port,        8008             }, 
-      { ip,          {0,0,0,0}        },
-      { name,        "Default server" } ].
 
 
 
@@ -78,17 +63,13 @@ spawn_listen_process(IP, Port) ->
 
 
 
-server_core_loop(Options) ->
+network_core_loop(Options) ->
 
     receive
     
-        { PID, listen, IP, Port } -> 
+        { listen, IP, Port } -> 
             spawn_listen_process(IP, Port),
-            server_core_loop(Options);
-    
-        { PID, start_server } -> 
-            % todo
-            server_core_loop(Options);
+            network_core_loop(Options);
     
         terminate ->
             ok
@@ -108,17 +89,9 @@ listen_on(Pid, IP, Port) ->
 
 
 
-start() ->
-
-    start(default_options()).
-
-
-
-
-
 start(Options) -> 
 
-    spawn(fun() -> server_core_loop(Options) end).
+    spawn(fun() -> network_core_loop(Options) end).
 
 
 
