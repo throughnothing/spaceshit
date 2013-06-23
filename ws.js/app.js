@@ -30,7 +30,9 @@ function join(server) {
 
 function data(client, str) {
     var msg = JSON.parse(str);
-    client.emit('frame', msg);
+
+    if(msg)
+        client.emit('frame', msg);
 }
 
 io.sockets.on('connection', function (client) {
