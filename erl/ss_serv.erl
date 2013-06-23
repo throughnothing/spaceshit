@@ -12,8 +12,8 @@
     init_server_core_loop/1,
 
     start/0,
-      start/1,
-      
+    start/1,
+    stop/0,
     stop/1
 
 ]).
@@ -98,11 +98,12 @@ start(Options) ->
     Net = ss_network:start(),
     io:format("  - Net is ~w~n", [Net]),
 
-    spawn(fun() -> init_server_core_loop(FinalOpts ++ [{net, Net}]) end).
+    Pid = spawn(fun() -> init_server_core_loop(FinalOpts ++ [{net, Net}]) end),
+    put(server, Pid)
+.
 
-
-
-
+stop() ->
+    stop(get(server)).
 
 stop(WhichServer) ->
 
