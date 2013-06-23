@@ -9,7 +9,7 @@
 
     listen_on/3,
 
-    start/1,      
+    start/0,
     stop/1,
 
 %%%%%%%%%%%%%%%%%%%%
@@ -39,6 +39,7 @@ internal_listen_on(TheIP, ThePort) ->
 internal_listen_loop(ListeningSocket) ->
 
     { ok, ServerSocket } = gen_tcp:accept(ListeningSocket),
+    io:format("    + accepted socket at ~w~n", [ServerSocket]),
     handle_new_server(ServerSocket),
     internal_listen_loop(ListeningSocket).
 
@@ -63,15 +64,16 @@ spawn_listen_process(IP, Port) ->
 
 
 
-network_core_loop(Options) ->
+network_core_loop() ->
 
     receive
     
         { listen, IP, Port } -> 
             spawn_listen_process(IP, Port),
-            network_core_loop(Options);
+            network_core_loop();
     
         terminate ->
+            io:format("Network core loop exiting~n"),
             ok
     
     end.
@@ -80,18 +82,20 @@ network_core_loop(Options) ->
 
 
 
-listen_on(Pid, IP, Port) ->
+listen_on(ServerPid, IP, Port) ->
 
-    Pid ! { self(), listen, IP, Port },
+    io:format("  ! Beginning network listen on ~w ~w to ~w~n", [IP,Port,ServerPid]),
+    ServerPid ! { listen, IP, Port },
     ok.
 
 
 
 
 
-start(Options) -> 
+start() -> 
 
-    spawn(fun() -> network_core_loop(Options) end).
+    io:format("  + ss_network starting~n"),
+    spawn(fun() -> network_core_loop() end).
 
 
 
