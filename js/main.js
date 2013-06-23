@@ -11,7 +11,7 @@
     // Load context & assets
     var ctx = canvas.getContext('2d');
     var bg = d.getElementById('bg');
-    var sprites = d.getElementsByClassName('sprite');
+    var sprites = d.getElementById('preload');
 
     // Draw screen
     var draw = function() {
@@ -21,7 +21,7 @@
 
         for(var id in objs) {
             var obj = objs[id];
-            drawRotated(sprites[obj.type], obj.x, obj.y, obj.r);
+            drawRotated(sprites.getElementById(obj.type), obj.x, obj.y, obj.r);
         }
     };
 
