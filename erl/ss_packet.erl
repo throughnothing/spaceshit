@@ -7,11 +7,10 @@
 
 -export([
 
-    hello/1,
-    cause_join/1,
-    cause_part/1,
-    new_frame/1,
-    goodbye/0
+    parse/1,
+
+    join_stall/0,
+    position_frame/5
 
 ]).
 
@@ -19,39 +18,59 @@
 
 
 
-hello(Content) ->
+join_stall() ->
 
-    todo.
-
-
-
-
-
-cause_join(Content) ->
-
-    todo.
+    <<253>>.
 
 
 
 
 
-cause_part(Content) ->
+position_frame(ObjType, ObjNum, X, Y, R) ->
 
-    todo.
-
-
-
-
-
-new_frame(Content) ->
-
-    todo.
+    <<4, ObjType:8, ObjNum:8, X:32/float, Y:32/float, R:32/float>>.
 
 
 
 
 
-goodbye() ->
+parse(<<0,0>>) ->
 
-    todo.
+    { join, as_player };
+
+parse(<<0,1>>) ->
+
+    { join, as_observer };
+
+
+
+
+
+parse(<<1>>) ->
+
+    part;
+
+
+
+
+
+parse(<<2, SignedToSpeed:8/signed-integer>>) ->
+
+    { set_speed, SignedToSpeed };
+
+
+
+
+
+parse(<<3, RelativeAngleInRadians:32/float>>) ->
+
+    { turn, RelativeAngleInRadians };
+
+
+
+
+
+parse(<<4>>) ->
+
+    fire.
 

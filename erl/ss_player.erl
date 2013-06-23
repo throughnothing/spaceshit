@@ -9,6 +9,7 @@
 
     create/1,
     get_info/1,
+    default_info/0,
     add_opponent/2
 
 ]).
@@ -38,7 +39,7 @@ player_core_loop(Socket) ->
         { add_opponent, P } ->
             put(opponent, P);
 
-        { get_opponent, P } ->
+        { get_opponent } ->
             get(opponent);
 
         { tcp, _Socket, Data } ->
@@ -46,10 +47,8 @@ player_core_loop(Socket) ->
             player_core_loop(_Socket);
     
         terminate ->
-
-            ServerSocket = socket,
-            gen_tcp:send(ServerSocket, ss_packet:goodbye()),
-            gen_tcp:close(ServerSocket),
+            gen_tcp:send(Socket, ss_packet:goodbye()),
+            gen_tcp:close(Socket),
             ok
     
     end.
@@ -79,8 +78,7 @@ start_player_loop(Socket) ->
     player_core_loop(Socket).
 
 
-create(MatchMakerPID) ->
+create(FromSocket) ->
+    spawn(fun() -> start_player_loop(FromSocket) end).
 
-    Player = spawn(fun() -> start_player_loop(fromSocket) end),
-    ss_matchmaker:add_player(MatchMakerPID, Player).
 

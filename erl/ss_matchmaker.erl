@@ -2,16 +2,18 @@
 -module(ss_matchmaker).
 
 -export([
-    matchmaker_core_loop/1,
+
+    matchmaker_core_loop/0,
 
     add_player/2,
-    remove_player/2,
+    remove_player/1,
+    start/0,
     stop/1
 ]).
 
       
 
-matchmaker_core_loop(Options) ->
+matchmaker_core_loop() ->
 
   receive
 
@@ -23,14 +25,11 @@ matchmaker_core_loop(Options) ->
         true -> match(GetP, P),
             erase(player)
       end,
-      matchmaker_core_loop(Options);
+      matchmaker_core_loop();
 
-    {remove_player, P} ->
+    remove_player ->
       erase(player),
-      matchmaker_core_loop(Options);
-
-    { PID, match, P1, P2 } ->
-      matchmaker_core_loop(Options);
+      matchmaker_core_loop();
 
     terminate ->
       ok
@@ -49,11 +48,13 @@ add_player(Pid, P) ->
   Pid ! { add_player, P },
   ok.
 
-remove_player(Pid, P) ->
-  Pid ! { remove_player, P },
+remove_player(Pid) ->
+  Pid ! remove_player,
   ok.
 
-stop(WhichMatch) ->
+start() ->
+  matchmaker_core_loop().
 
-  WhichMatch ! terminate,
+stop(MatchmakerPid) ->
+  MatchmakerPid ! terminate,
   ok.

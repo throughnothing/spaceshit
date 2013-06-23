@@ -27,9 +27,7 @@
 
 internal_listen_on(TheIP, ThePort) ->
 
-    Options = [ {ip, TheIP} ],
-
-    { ok, ListeningSocket } = gen_tcp:listen(ThePort, Options),
+    { ok, ListeningSocket } = gen_tcp:listen(ThePort, [{ip, TheIP}]),
     ListeningSocket.
 
 
@@ -49,8 +47,8 @@ internal_listen_loop(ListeningSocket) ->
 
 handle_new_server(ServerSocket) ->
 
-    gen_tcp:send(ServerSocket, "\nHello there\n\n\n"),
-    gen_tcp:close(ServerSocket).
+    PlayerPid = ss_player:create(ServerSocket),
+    ss_matchmaker:add_player(MatchMakerPID, PlayerPid).
 
 
 
