@@ -11,13 +11,17 @@
 
     listen_on/3,
 
-    internal_listen_on/2,
-    internal_listen_loop/1,
-
     start/0,
       start/1,
       
-    stop/1
+    stop/1,
+
+%%%%%%%%%%%%%%%%%%%%
+%%%%% internal %%%%%
+%%%%%%%%%%%%%%%%%%%%
+
+    internal_listen_on/2,
+    internal_listen_loop/1
 
 ]).
 
