@@ -13,6 +13,10 @@ h1 {
     font-size: 40px;
 }
 
+.preload {
+    display: none;
+}
+
 #display {
     display: inline-block;
     border: thin solid #000;
@@ -21,9 +25,12 @@ h1 {
 </head>
 <body>
     <h1>this is the space shit space port</h1>
-
-    <div id="display">
+    
+    <div class="preload">
+        <img id="bg" src="img/space.jpg">
     </div>
+
+    <canvas id="display" width="1000" height="1000"></canvas>
 
     <script src="node_modules/three/three.min.js"></script>
     <script src="js/main.js"></script>
