@@ -17,5 +17,10 @@
     socket.on('frame', function(data) {
         console.log('got frame: ');
         console.log(data);
+
+        if(data.format != 'info' && data.format != 'delete')
+            return;
+
+        // display shit, yo
     });
 })();

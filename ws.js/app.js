@@ -7,9 +7,10 @@ var HOST = 'localhost'
   , PORT = 8008;
 
 // Packet IDs
-var PKT_JOIN  = 0,
-    PKT_INFO  = 5,
-    PKT_STALL = 253;
+var PKT_JOIN   = 0,
+    PKT_INFO   = 5,
+    PKT_DELETE = 6,
+    PKT_STALL  = 253;
 
 app.listen(80);
 
@@ -51,6 +52,14 @@ function data(client, msg) {
                 x:      msg.readFloatLE(3),
                 y:      msg.readFloatLE(7),
                 r:      msg.readFloatLE(11)
+            });
+        break;
+
+        case PKT_DELETE:
+            client.emit('frame', {
+                format: 'delete',
+                type:   msg[1],
+                id:     msg[2]
             });
         break;
 
