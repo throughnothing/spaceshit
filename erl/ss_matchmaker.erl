@@ -53,7 +53,7 @@ remove_player(Pid) ->
   ok.
 
 start() ->
-  matchmaker_core_loop().
+  spawn(fun() -> matchmaker_core_loop() end).
 
 stop(MatchmakerPid) ->
   MatchmakerPid ! terminate,

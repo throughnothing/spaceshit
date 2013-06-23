@@ -40,7 +40,7 @@ init_server_core_loop(Options) ->
 
     ss_network:start(),
     MatchMakerPid = ss_matchmaker:start(),
-    ss_timer:start(),
+    %ss_timer:start(),
 
     Auto = proplists:get_value(auto_listen, Options),
     put(network, proplists:get_value(net, Options)),
