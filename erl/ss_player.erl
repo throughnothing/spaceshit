@@ -8,18 +8,32 @@
 -export([
 
     create/1,
+    get_info/1,
     add_opponent/2
 
 ]).
 
 
 
+default_info() ->
 
+    [ { x, 0 },
+      { y, 0 }, 
+      { rotation, 0 } ].
 
 
 player_core_loop(Socket) ->
 
     receive
+
+        get_info ->
+          X = get(x),
+          Y = get(y),
+          Rotation = get(rotation),
+          io:format("x: ~w, y: ~w, rotation: ~w~n", [X, Y, Rotation]),
+          [ { x, X },
+            { y, Y },
+            { rotation, Rotation } ];
 
         { add_opponent, P } ->
             put(opponent, P);
@@ -46,7 +60,9 @@ handle_data(Data) ->
     
     todo.
 
-
+get_info(Pid) ->
+  Pid ! get_info,
+  ok.
 
 add_opponent(Pid, P) ->
   io:format("My opponent is: ~w~n", [ P ]),
@@ -55,7 +71,10 @@ add_opponent(Pid, P) ->
 
 
 start_player_loop(Socket) ->
-
+    
+    put(x, 0),
+    put(y, 0),
+    put(rotation, 0),
     player_core_loop(Socket).
 
 
