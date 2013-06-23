@@ -6,12 +6,6 @@ var app = require('http').createServer(handler)
 var HOST = 'localhost'
   , PORT = 8008;
 
-// Packet IDs
-var PKT_JOIN   = 0,
-    PKT_INFO   = 5,
-    PKT_DELETE = 6,
-    PKT_STALL  = 253;
-
 app.listen(80);
 
 function handler (req, res) {
@@ -28,45 +22,15 @@ function handler (req, res) {
 }
 
 function join(server) {
-    var pkt = new Buffer(2);
-
-    pkt[0] = PKT_JOIN;
-    pkt[1] = 1; // observer
-    
-    server.write(pkt);
+    server.write(JSON.stringify({
+        'cmd': 'join',
+        'type': 'spectator'
+    });
 }
 
-function data(client, msg) {
-    var type = 'unknown';
-
-    switch(msg[0]) {
-        case PKT_STALL:
-            client.emit('frame', {format: 'stall'});
-        break;
-
-        case PKT_INFO:
-            client.emit('frame', {
-                format: 'info',
-                type:   msg[1],
-                id:     msg[2],
-                x:      msg.readFloatLE(3),
-                y:      msg.readFloatLE(7),
-                r:      msg.readFloatLE(11)
-            });
-        break;
-
-        case PKT_DELETE:
-            client.emit('frame', {
-                format: 'delete',
-                type:   msg[1],
-                id:     msg[2]
-            });
-        break;
-
-        default:
-            client.emit('frame', {format: 'unknown'});
-        break;
-    }
+function data(client, str) {
+    var msg = JSON.parse(str);
+    client.emit('frame', msg);
 }
 
 io.sockets.on('connection', function (client) {
