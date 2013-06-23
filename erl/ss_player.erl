@@ -60,7 +60,7 @@ start_player_loop(Socket) ->
 
 
 create(MatchMakerPID) ->
-    ss_matchmaker:add_player(MatchMakerPID, self()),
 
-    spawn(fun() -> start_player_loop(fromSocket) end).
+    Player = spawn(fun() -> start_player_loop(fromSocket) end),
+    ss_matchmaker:add_player(MatchMakerPID, Player).
 
