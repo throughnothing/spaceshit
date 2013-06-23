@@ -4,3 +4,4 @@ deps
 *.beam
 *.plt
 node_modules/
+*.swp
