@@ -16,14 +16,19 @@ matchmaker_core_loop(Options) ->
   receive
 
     {add_player, P} ->
+      GetP = get(player),
+      if
+        GetP == undefined -> put(player, P);
+        true -> match(GetP, P),
+            erase(player)
+      end,
       matchmaker_core_loop(Options);
 
     {remove_player, P} ->
+      erase(player),
       matchmaker_core_loop(Options);
 
     { PID, match, P1, P2 } ->
-      io:format("hello~n"),
-      nothing,
       matchmaker_core_loop(Options);
 
     terminate ->
@@ -31,19 +36,17 @@ matchmaker_core_loop(Options) ->
 
   end.
 
+match(P1, P2) ->
+  io:format("Matching ~w and ~w~n", [_P1, _P2]),
+  ss_player:add_opponent(P1, P2),
+  ss_player:add_opponent(P2, P1),
+  matching.
+
 add_player(Pid, P) ->
-  GetP = get(player),
-  io:format("dog~n"),
-  if
-    GetP == undefined -> put(player, P);
-    true -> Pid ! { self(), match, GetP, P },
-        erase(player)
-  end,
   Pid ! { add_player, P },
   ok.
 
 remove_player(Pid, P) ->
-  erase(player),
   Pid ! { remove_player, P },
   ok.
 
