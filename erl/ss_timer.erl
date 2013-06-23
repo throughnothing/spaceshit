@@ -5,7 +5,7 @@
 -export([
 
     start/2,
-    stop/0
+    stop/0,
     timer_loop/1,
     core_loop/2
 ]).

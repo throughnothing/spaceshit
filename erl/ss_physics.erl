@@ -15,7 +15,7 @@ detect_collisions(Obj1, Obj2) ->
 
 % TODO: don't do this here, let each object calculate themselves,
 % and bullets should probably 'target'?
-move_object(Obj) ->
+move_object(Obj) when record(Obj, vector) ->
 
     NewX = Obj#vector.x + (Obj#vector.speed * math:sin(Obj#vector.angle)),
     NewX = Obj#vector.x + (Obj#vector.speed * math:cos(Obj#vector.angle))

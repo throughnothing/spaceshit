@@ -1,2 +1,2 @@
-{"*", [report, verbose, debug_info, warn_unused_vars, warn_unused_import]}.
+{"*", [report, verbose, debug_info]}.
 

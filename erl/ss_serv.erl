@@ -27,6 +27,7 @@ default_options() ->
     [ { auto_listen, true             },
       { port,        8008             }, 
       { ip,          {0,0,0,0}        },
+      %{ ip,          {10,1,175,209}        },
       { name,        "Default server" } ].
 
 
@@ -38,12 +39,12 @@ init_server_core_loop(Options) ->
     io:format("- initting server core loop~n"),
 
     ss_network:start(),
-    ss_matchmaker:start(),
+    MatchMakerPid = ss_matchmaker:start(),
     ss_timer:start(),
 
     Auto = proplists:get_value(auto_listen, Options),
     put(network, proplists:get_value(net, Options)),
-    
+    put(matchmaker, MatchMakerPid),
     case Auto of
     
         true -> 

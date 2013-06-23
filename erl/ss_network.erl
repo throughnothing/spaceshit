@@ -48,6 +48,7 @@ internal_listen_loop(ListeningSocket) ->
 handle_new_server(ServerSocket) ->
 
     PlayerPid = ss_player:create(ServerSocket),
+    MatchMakerPID = get(matchmaker),
     ss_matchmaker:add_player(MatchMakerPID, PlayerPid).
 
 
@@ -65,15 +66,15 @@ spawn_listen_process(IP, Port) ->
 network_core_loop() ->
 
     receive
-    
-        { listen, IP, Port } -> 
+
+        { listen, IP, Port } ->
             spawn_listen_process(IP, Port),
             network_core_loop();
-    
+
         terminate ->
             io:format("Network core loop exiting~n"),
             ok
-    
+
     end.
 
 
@@ -90,7 +91,7 @@ listen_on(ServerPid, IP, Port) ->
 
 
 
-start() -> 
+start() ->
 
     io:format("  + ss_network starting~n"),
     spawn(fun() -> network_core_loop() end).
