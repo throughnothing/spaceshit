@@ -65,8 +65,4 @@
 
 	// draw!
 	renderer.render(scene, camera);
-
-console.log("HWAT?");
-
-
 })();
