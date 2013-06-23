@@ -1,1 +1,1 @@
-whargarbl
+Server for Spaceshit
