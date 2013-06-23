@@ -7,7 +7,8 @@
 
 -export([
 
-    create/1
+    create/1,
+    add_opponent/2
 
 ]).
 
@@ -28,12 +29,13 @@ player_core_loop(Socket) ->
 
         { tcp, _Socket, Data } ->
             handle_data(Data),
-            player_loop(Socket);
+            player_core_loop(_Socket);
     
         terminate ->
 
+            ServerSocket = socket,
             gen_tcp:send(ServerSocket, ss_packet:goodbye()),
-            gen_tcp:close(ServerSocket).
+            gen_tcp:close(ServerSocket),
             ok
     
     end.
@@ -54,11 +56,11 @@ add_opponent(Pid, P) ->
 
 start_player_loop(Socket) ->
 
-    player_loop(Socket).
+    player_core_loop(Socket).
 
 
-create(FromSocket) ->
+create(MatchMakerPID) ->
     ss_matchmaker:add_player(MatchMakerPID, self()),
 
-    spawn(fun() -> start_player_loop(FromSocket) end).
+    spawn(fun() -> start_player_loop(fromSocket) end).
 

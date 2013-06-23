@@ -17,6 +17,7 @@ matchmaker_core_loop(Options) ->
 
     {add_player, P} ->
       GetP = get(player),
+      io:format("Added Player ~w~n", [ P ]),
       if
         GetP == undefined -> put(player, P);
         true -> match(GetP, P),
@@ -37,12 +38,13 @@ matchmaker_core_loop(Options) ->
   end.
 
 match(P1, P2) ->
-  io:format("Matching ~w and ~w~n", [_P1, _P2]),
+  io:format("Matching ~w and ~w~n", [P1, P2]),
   ss_player:add_opponent(P1, P2),
   ss_player:add_opponent(P2, P1),
   matching.
 
 add_player(Pid, P) ->
+  io:format("Adding Player ~w ~n", [ P ]),
   Pid ! { add_player, P },
   ok.
 
