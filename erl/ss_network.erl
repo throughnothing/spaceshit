@@ -1,5 +1,5 @@
 
--module(ss_serv).
+-module(ss_network).
 
 
 
@@ -27,9 +27,10 @@
 
 default_options() ->
 
-    [ { port, 8008             }, 
-      { ip,   {0,0,0,0}        },
-      { name, "Default server" } ].
+    [ { auto_listen, false            },
+      { port,        8008             }, 
+      { ip,          {0,0,0,0}        },
+      { name,        "Default server" } ].
 
 
 

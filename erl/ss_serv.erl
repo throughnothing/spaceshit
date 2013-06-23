@@ -27,7 +27,7 @@
 
 default_options() ->
 
-    [ { auto_listen, false            }
+    [ { auto_listen, false            },
       { port,        8008             }, 
       { ip,          {0,0,0,0}        },
       { name,        "Default server" } ].
