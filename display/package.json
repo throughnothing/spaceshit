@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "license": "BSD",
   "dependencies": {
+    "socket.io": "*",
     "socket.io-client": "*",
     "three": "*"
   }
