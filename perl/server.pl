@@ -51,6 +51,7 @@ sub join_player {
     $conns{$id}{angle} = 0;
     $conns{$id}{rotation} = 0;
     $conns{$id}{speed} = 10;
+    $conns{$id}{id} = $id;
 }
 
 #sub join_player {
