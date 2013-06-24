@@ -22,15 +22,15 @@ function handler (req, res) {
 }
 
 function join(server) {
-    console.log('GOT JOIN');
     server.write(JSON.stringify({
         'cmd': 'join',
-        'type': 'player'
+        'type': 'spectator'
     }) + '\n');
 }
 
 function data(client, str) {
-    console.log('recvd: ' + str);
+    console.log('Received: ' + str);
+
     try {
         msg = JSON.parse(str);
         client.emit('frame', msg);
