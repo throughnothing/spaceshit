@@ -11,12 +11,12 @@ Packets
 integer, float and string mean the obvious things. All values are encoded using
 little-endian and all angles are given in radians.
 
-|Command|Sent by|Format|
-|-------|:-----:|-----:|
-|INFO|Server|`{'cmd':'info','type':string,'id':integer,'x':float,'y':float,'z':float,'angle':float}`|
-|DELETE|Server|`{'cmd':'delete','type':string,'id':integer}`|
-|JOIN|Client|`{'cmd':'join','type':string}`|
-|PART|Client|`{'cmd':'part'}`|
-|THRUST|Client|`{'cmd':'thrust'}`|
-|TURN|Client|`{'cmd':'turn','dir':string}`|
-|FIRE|Client|`{'cmd':'fire'}`|
+|Command|Sent by|Format|Description|
+|-------|-------|------|-----------|
+|INFO|Server|`{'cmd':'info','type':string,'id':integer,'x':float,'y':float,'z':float,'angle':float}`|An object's state has been changed. `type` can be `spaceship` or `bullet`.|
+|DELETE|Server|`{'cmd':'delete','type':string,'id':integer}`|An object has been deleted.|
+|JOIN|Client|`{'cmd':'join','type':string}`|A client is joining. `type` can be `player` or `spectator`.|
+|PART|Client|`{'cmd':'part'}`|A client is leaving.|
+|THRUST|Client|`{'cmd':'thrust','dir':string}`|Set thruster state. `dir` can be `forward` or `off`.|
+|TURN|Client|`{'cmd':'turn','dir':string}`|Set rotational state. `dir` can be `cw` or `ccw`.|
+|FIRE|Client|`{'cmd':'fire'}`|Fire a bullet.|
