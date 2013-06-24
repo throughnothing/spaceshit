@@ -22,21 +22,24 @@ function handler (req, res) {
 }
 
 function join(server) {
+    console.log('GOT JOIN');
     server.write(JSON.stringify({
         'cmd': 'join',
-        'type': 'spectator'
-    }));
+        'type': 'player'
+    }) + '\n');
 }
 
 function data(client, str) {
-    var msg = JSON.parse(str);
-
-    if(msg)
+    console.log('recvd: ' + str);
+    try {
+        msg = JSON.parse(str);
         client.emit('frame', msg);
+    } catch(e) {}
 }
 
 io.sockets.on('connection', function (client) {
     var server = net.connect({port: PORT, host: HOST}).on('connect', function() {
+        client.emit('ready', {});
         client.on('join', function() { join(server); });
         server.on('data', function(m) { data(client, m); });
     });
