@@ -1,7 +1,7 @@
 ;(function() {
     var d = document,
         canvas = d.getElementById('display'),
-        socket = io.connect('http://localhost'),
+        socket = io.connect('http://localhost:8008'),
         objs = {};
 
     if(!canvas.getContext) {
@@ -11,7 +11,6 @@
     // Load context & assets
     var ctx = canvas.getContext('2d');
     var bg = d.getElementById('bg');
-    var sprites = d.getElementById('preload');
 
     // Draw screen
     var draw = function() {
@@ -21,7 +20,7 @@
 
         for(var id in objs) {
             var obj = objs[id];
-            drawRotated(sprites.getElementById(obj.type), obj.x, obj.y, obj.r);
+            drawRotated(d.getElementById(obj.type), obj.x * 600, obj.y * 600, obj.r);
         }
     };
 
@@ -31,24 +30,27 @@
 
         ctx.translate(x, y);
         ctx.rotate(angle);
-        ctx.drawImage(image, -image.width/2, -image.height/2);
+        ctx.drawImage(image, Math.floor(-image.width/2), Math.floor(-image.height/2));
 
         ctx.restore();
     };
  
     // Handle middleware communication
-    socket.emit('join', {});
+    socket.on('ready', function() {
+        socket.emit('join', {});
+    });
+
     socket.on('frame', function(pkt) {
         console.log('got frame: ');
-        console.log(data);
+        console.log(pkt);
 
         switch(pkt.cmd) {
             case 'info':
-                objs[data.id] = data;
+                objs[pkt.id] = pkt;
             break;
 
             case 'delete':
-                delete objs[data.id];
+                delete objs[pkt.id];
             break;
         }
     });
