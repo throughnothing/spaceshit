@@ -2,9 +2,13 @@
   "name": "spaceshit",
   "version": "0.1.0",
   "license": "BSD",
+  "scripts": {
+    "start": "node js/ws-proxy.js"
+  },
   "dependencies": {
     "socket.io": "*",
     "socket.io-client": "*",
     "three": "*"
   }
 }
+
