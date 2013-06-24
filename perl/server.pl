@@ -1,11 +1,11 @@
 use Modern::Perl;
 
+#use Player;
+
 use AnyEvent;
 use AnyEvent::Socket qw/tcp_server/;
 use AnyEvent::Handle;
-#use JSON::Parse qw/json_to_perl/;
 use JSON;
-#use JSON::XS;
 
 use TryCatch;
 
@@ -19,13 +19,56 @@ my %command_dispatch = (
     'fire' => \&fire_player_bullet,
 );
 
+sub response_json {
+    my ($player) = @_;
+    my %response = (
+        cmd => "info",
+        type => "spaceship",
+        x    => $player->{x},
+        y    => $player->{y},
+        id   => $player->{id},
+        angle => $player->{angle},
+    );
+    to_json(\%response);
+};
+
+sub generate_random_updates {
+    for my $xid ( keys %conns ) {
+        my $player = ${conns}{$xid};
+        syswrite $player->{fh}, response_json($player) . "\015\012";
+    }
+};
+
 sub join_player {
     my ($request, $extra_args) = @_;
+    my $id = $extra_args->{host} . ":" . $extra_args->{port};
+    $conns{$id}{type} = $request->{type};
+    $conns{$id}{host} = $extra_args->{host};
+    $conns{$id}{port} = $extra_args->{port};
+    $conns{$id}{fh} = $extra_args->{fh};
+    $conns{$id}{x} = 0;
+    $conns{$id}{y} = 0;
+    $conns{$id}{angle} = 0;
+    $conns{$id}{rotation} = 0;
+    $conns{$id}{speed} = 10;
+}
 
-    my $id = "" . $extra_args->{host}. ":". $extra_args->{port};
-    $conns{$id} = {fh => $extra_args->{fh}, x => 0, y => 0, rotation => 0, speed => 0};
-    syswrite $conns{$id}{fh}, "debugging: " . to_json( $request) . "\015\012";
-};
+#sub join_player {
+    #my ($request, $extra_args) = @_;
+
+    #try {
+        #Player::new( { x => 1, y => 0,
+            #fh => $extra_args->{fh}, rotation => 0, speed => 0,
+            #host => $extra_args->{host}, port => $extra_args->{port},
+            #type => $request->{type}
+        #});
+
+        #$conns{Player::id()} = $player;
+        #syswrite $player->fh, "debugging: " . to_json( $request) . "\015\012";
+    #} catch ($e) {
+        #print "error : " . $e;
+    #}
+#};
 
 sub part_player {
     my ($request, $extra_args) = @_;
@@ -49,15 +92,25 @@ sub fire_player_bullet {
     my $id = "" . $extra_args->{host}. ":". $extra_args->{port};
     #syswrite $conns{$id}{fh},
 };
+            my $w = AnyEvent->timer (
+                after => 5,
+                interval => 1,
+                cb => \&generate_random_updates,
+            );
 
 my $guard = tcp_server undef, 9000, sub {
     my ($fh, $host, $port) = @_;
 
     syswrite $fh, scalar(keys %conns) > 0 ?
     "There are " . scalar(keys %conns) . " players\015\012" :
-    "There are no other players to challeng you yet\015\012";
+    "There are no other players to challenge you yet\015\012";
 
-    my $hdl = AnyEvent::Handle->new( fh => $fh );
+    my $hdl = AnyEvent::Handle->new( fh => $fh,
+        on_error => sub {
+            say "we got an error";
+            say "$_[2]";
+            $_[0]->destroy;
+        } );
     my $reader;
     $reader = sub {
         try {
@@ -77,9 +130,10 @@ my $guard = tcp_server undef, 9000, sub {
                 my $id = "" . $host. ":". $port;
                 syswrite $conns{$id}{fh}, $response;
             }
+            #generate_random_updates;
         } catch ($e) {
             print "error: " . $e . "\n";
-         }
+        }
         #for my $xid (grep {$_ ne $id} keys %conns) {
         #    syswrite $conns{$xid}, "$id $line\015\012";
         #}
@@ -89,3 +143,5 @@ my $guard = tcp_server undef, 9000, sub {
 };
 
 AnyEvent->condvar->recv;
+
+
