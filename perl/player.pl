@@ -55,7 +55,7 @@ tcp_connect $server, $port, sub {
         },
         on_eof => sub {
             $handle->destroy;
-            say "Done.";
+            say "Server ended.";
         },
         on_read => sub {
             print $_[0]->rbuf;
@@ -64,8 +64,15 @@ tcp_connect $server, $port, sub {
     );
 
     join_cmd ($fh, $handle);
+
+    # This is really dumb, but I guess it works for now.
+    foreach my $i (1..5) {
+      int(rand(2)) ?
+        thrust_forward_cmd ($fh, $handle) :
+        thrust_off_cmd($fh, $handle),
+        sleep(int(rand(6)));
+    }
     thrust_forward_cmd ($fh, $handle);
-    thrust_off_cmd ($fh, $handle);
 };
 
 AnyEvent->condvar->recv;
