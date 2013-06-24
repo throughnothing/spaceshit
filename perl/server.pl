@@ -32,17 +32,28 @@ sub response_json {
     to_json(\%response);
 };
 
-sub generate_random_updates {
+sub generate_player_updates {
     for my $xid ( keys %conns ) {
         my $player = ${conns}{$xid};
+        if( $player->{thrust} && $player->{thrust}  eq "forward" ) {
+            $player->{x} += 0.01;
+            #$player{y} += 0.01;
+        }
         syswrite $player->{fh}, response_json($player) . "\015\012";
     }
 };
 
-#sub generate_spectator_update {
-
-
-#};
+sub generate_spectator_updates {
+    for my $xid ( keys %conns ) {
+        if( $conns{$xid}{type} eq "spectator" ){
+            my $spectator = ${conns}{$xid};
+            for my $yid ( keys %conns ) {
+                my $player = ${conns}{$yid};
+                syswrite $spectator->{fh}, response_json($player) . "\015\012";
+            }
+        }
+    }
+};
 
 sub join_player {
     my ($request, $extra_args) = @_;
@@ -61,23 +72,6 @@ sub join_player {
     print "conns " . Dumper %conns;
 }
 
-#sub join_player {
-    #my ($request, $extra_args) = @_;
-
-    #try {
-        #Player::new( { x => 1, y => 0,
-            #fh => $extra_args->{fh}, rotation => 0, speed => 0,
-            #host => $extra_args->{host}, port => $extra_args->{port},
-            #type => $request->{type}
-        #});
-
-        #$conns{Player::id()} = $player;
-        #syswrite $player->fh, "debugging: " . to_json( $request) . "\015\012";
-    #} catch ($e) {
-        #print "error : " . $e;
-    #}
-#};
-
 sub part_player {
     my ($request, $extra_args) = @_;
 };
@@ -85,7 +79,9 @@ sub part_player {
 sub toggle_thrusters_player_ship {
     my ($request, $extra_args) = @_;
     my $id = "" . $extra_args->{host}. ":". $extra_args->{port};
-    $conns{$id}{thrust} = $request->{thrust};
+    $conns{$id}{thrust} = $request->{dir};
+
+    syswrite $conns{$id}{fh}, "Set Thrusting \n";
 };
 
 sub toggle_turn_player_ship{
@@ -100,11 +96,17 @@ sub fire_player_bullet {
     my $id = "" . $extra_args->{host}. ":". $extra_args->{port};
     #syswrite $conns{$id}{fh},
 };
-            my $w = AnyEvent->timer (
-                after => 5,
-                interval => 1,
-                cb => \&generate_random_updates,
-            );
+my $pt = AnyEvent->timer (
+    after => 5,
+    interval => 1,
+    cb => \&generate_player_updates,
+);
+
+my $st = AnyEvent->timer (
+    after => 5,
+    interval => 1,
+    cb => \&generate_spectator_updates,
+);
 
 my $guard = tcp_server undef, 9000, sub {
     my ($fh, $host, $port) = @_;
