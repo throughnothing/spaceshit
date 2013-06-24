@@ -1,7 +1,7 @@
 ;(function() {
     var d = document,
         canvas = d.getElementById('display'),
-        socket = io.connect('http://localhost'),
+        socket = io.connect('http://localhost:8008'),
         objs = {};
 
     if(!canvas.getContext) {

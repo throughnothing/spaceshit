@@ -6,7 +6,7 @@ var app = require('http').createServer(handler)
 var HOST = '10.1.175.209'
   , PORT = 9000;
 
-app.listen(80);
+app.listen(8008);
 
 function handler (req, res) {
   fs.readFile(__dirname + '/index.html',
