@@ -39,6 +39,11 @@ sub generate_random_updates {
     }
 };
 
+#sub generate_spectator_update {
+
+
+#};
+
 sub join_player {
     my ($request, $extra_args) = @_;
     my $id = $extra_args->{host} . ":" . $extra_args->{port};
@@ -52,6 +57,8 @@ sub join_player {
     $conns{$id}{rotation} = 0;
     $conns{$id}{speed} = 10;
     $conns{$id}{id} = $id;
+    use Data::Dumper;
+    print "conns " . Dumper %conns;
 }
 
 #sub join_player {
