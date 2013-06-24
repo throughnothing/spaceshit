@@ -3,8 +3,8 @@ var app = require('http').createServer(handler)
   , fs = require('fs')
   , net = require('net');
 
-var HOST = 'localhost'
-  , PORT = 8008;
+var HOST = '10.1.175.209'
+  , PORT = 9000;
 
 app.listen(80);
 
@@ -25,7 +25,7 @@ function join(server) {
     server.write(JSON.stringify({
         'cmd': 'join',
         'type': 'spectator'
-    });
+    }));
 }
 
 function data(client, str) {
@@ -36,9 +36,7 @@ function data(client, str) {
 }
 
 io.sockets.on('connection', function (client) {
-    var server = new net.socket({type: 'tcp4'});
-
-    server.connect(PORT, HOST).on('connect', function() {
+    var server = net.connect({port: PORT, host: HOST}).on('connect', function() {
         client.on('join', function() { join(server); });
         server.on('data', function(m) { data(client, m); });
     });
