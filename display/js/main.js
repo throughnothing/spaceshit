@@ -11,7 +11,6 @@
     // Load context & assets
     var ctx = canvas.getContext('2d');
     var bg = d.getElementById('bg');
-    var sprites = d.getElementById('preload');
 
     // Draw screen
     var draw = function() {
@@ -21,7 +20,7 @@
 
         for(var id in objs) {
             var obj = objs[id];
-            drawRotated(sprites.getElementById(obj.type), obj.x, obj.y, obj.r);
+            drawRotated(d.getElementById(obj.type), obj.x, obj.y, obj.r);
         }
     };
 
@@ -37,18 +36,21 @@
     };
  
     // Handle middleware communication
-    socket.emit('join', {});
+    socket.on('ready', function() {
+        socket.emit('join', {});
+    });
+
     socket.on('frame', function(pkt) {
         console.log('got frame: ');
-        console.log(data);
+        console.log(pkt);
 
         switch(pkt.cmd) {
             case 'info':
-                objs[data.id] = data;
+                objs[pkt.id] = pkt;
             break;
 
             case 'delete':
-                delete objs[data.id];
+                delete objs[pkt.id];
             break;
         }
     });
