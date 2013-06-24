@@ -39,6 +39,7 @@ sub generate_player_updates {
             $player->{x} += 0.01;
             #$player{y} += 0.01;
         }
+        print response_json($player);
         syswrite $player->{fh}, response_json($player) . "\015\012";
     }
 };
@@ -127,6 +128,7 @@ my $guard = tcp_server undef, 9000, sub {
 
             my $line = $_[1];
             print "line = $line\n";
+            $hdl->push_read( line => $reader ) if ($line eq "");
             my $request = JSON->new->decode($line);
 
             $hdl->push_read( line => $reader ) if !$request;
