@@ -31,14 +31,19 @@ function join(server) {
 function data(client, str) {
     console.log('Received: ' + str);
 
-    try {
-        msg = JSON.parse(str);
-        client.emit('frame', msg);
-    } catch(e) {}
+    var strs = str.split(/[\r\n]/);
+    for(var i = 0; i < strs.length; ++i) {
+        try {
+            msg = JSON.parse(strs[i]);
+            client.emit('frame', msg);
+        } catch(e) {}
+    }
 }
 
 io.sockets.on('connection', function (client) {
     var server = net.connect({port: PORT, host: HOST}).on('connect', function() {
+        server.setEncoding('utf8');
+
         client.emit('ready', {});
         client.on('join', function() { join(server); });
         server.on('data', function(m) { data(client, m); });
