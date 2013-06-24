@@ -20,7 +20,7 @@
 
         for(var id in objs) {
             var obj = objs[id];
-            drawRotated(d.getElementById(obj.type), obj.x, obj.y, obj.r);
+            drawRotated(d.getElementById(obj.type), obj.x * 600, obj.y * 600, obj.r);
         }
     };
 
@@ -30,7 +30,7 @@
 
         ctx.translate(x, y);
         ctx.rotate(angle);
-        ctx.drawImage(image, -image.width/2, -image.height/2);
+        ctx.drawImage(image, Math.floor(-image.width/2), Math.floor(-image.height/2));
 
         ctx.restore();
     };
